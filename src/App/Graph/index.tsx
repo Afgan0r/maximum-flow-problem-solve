@@ -1,11 +1,16 @@
 import Graph from 'react-graph-vis';
 import { useState } from 'react';
-import { Text } from './styled';
 import { Options } from 'vis';
 import { graphData } from 'react-graph-vis';
 
 const options: Options = {
   locale: 'ru',
+  nodes: {
+    color: {
+      border: '#000000',
+      background: '#ffffff'
+    },
+  },
   layout: {
     hierarchical: {
       enabled: false,
@@ -15,15 +20,15 @@ const options: Options = {
   },
   edges: {
     color: '#000000',
-    // smooth: {
-    //   enabled: true,
-    //   type: 'horizontal',
-    //   roundness: 0.5,
-    // }
+    width: 1.1,
   },
   physics: {
     minVelocity: 0.01,
   },
+  interaction: {
+    dragView: false,
+    zoomView: false,
+  }
 };
 
 const GraphComponent = () => {
@@ -88,12 +93,7 @@ const GraphComponent = () => {
     ],
   });
 
-  return (
-    <div>
-      <Text>Тестовый текст</Text>
-      <Graph graph={graph} options={options} style={{ height: 500 }} />
-    </div>
-  );
+  return <Graph graph={graph} options={options} style={{ flex: 3 }} />;
 };
 
 export default GraphComponent;
