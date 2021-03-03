@@ -2,13 +2,14 @@ import Graph from 'react-graph-vis';
 import { useState } from 'react';
 import { Options } from 'vis';
 import { graphData } from 'react-graph-vis';
+import { GraphContainer } from './styled';
 
 const options: Options = {
   locale: 'ru',
   nodes: {
     color: {
       border: '#000000',
-      background: '#ffffff'
+      background: '#ffffff',
     },
   },
   layout: {
@@ -28,7 +29,7 @@ const options: Options = {
   interaction: {
     dragView: false,
     zoomView: false,
-  }
+  },
 };
 
 const GraphComponent = () => {
@@ -93,7 +94,11 @@ const GraphComponent = () => {
     ],
   });
 
-  return <Graph graph={graph} options={options} style={{ flex: 3 }} />;
+  return (
+    <GraphContainer>
+      <Graph graph={graph} options={options} />
+    </GraphContainer>
+  );
 };
 
 export default GraphComponent;
