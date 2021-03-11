@@ -3,13 +3,11 @@ import { useState } from 'react';
 import { InputContainer, Button } from './styled';
 
 type CreateNodesPropsType = {
-  onCreate: () => void,
-}
+  onCreate: (count: number) => void;
+};
 
-const CreateNodes = ({
-  onCreate,
-}: CreateNodesPropsType) => {
-  const min = 4;
+const CreateNodes = ({ onCreate }: CreateNodesPropsType) => {
+  const min = 1;
   const max = 20;
   const [value, setValue] = useState<number>(4);
 
@@ -17,11 +15,19 @@ const CreateNodes = ({
     <>
       <InputContainer>
         <Typography.Text>Количество вершин:</Typography.Text>
-        <InputNumber autoFocus min={min} max={max} onChange={(value) => setValue(value)} />
+        <InputNumber
+          autoFocus
+          min={min}
+          max={max}
+          onChange={(value) => setValue(value)}
+          onKeyUp={(e) => (e.key === 'Enter' ? onCreate(Number(e.currentTarget.value)) : null)}
+        />
       </InputContainer>
-      <Button disabled={value < min || value > max} onClick={onCreate}>Создать вершины</Button>
+      <Button disabled={value < min || value > max} onClick={() => onCreate(value)}>
+        Создать вершины
+      </Button>
     </>
   );
-}
+};
 
 export default CreateNodes;
