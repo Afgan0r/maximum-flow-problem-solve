@@ -36,9 +36,7 @@ type GraphPropsType = {
   graph: GraphData;
 };
 
-const GraphComponent = ({
-  graph,
-}: GraphPropsType) => {
+const GraphComponent = ({ graph }: GraphPropsType) => {
   return (
     <GraphContainer>
       <Graph key={nanoid()} graph={graph} options={options} />
