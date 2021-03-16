@@ -1,8 +1,9 @@
 import Graph from 'react-graph-vis';
 import { Options } from 'vis';
-import { GraphData } from 'react-graph-vis';
 import { GraphContainer } from './styled';
 import { nanoid } from 'nanoid';
+import { GraphType, PreparedEdges, PreparedNodes } from 'App/types';
+import { findMinEdge, pathSearch, prepareGraphDataToAlgorithm } from 'utils';
 
 const options: Options = {
   locale: 'ru',
@@ -33,10 +34,39 @@ const options: Options = {
 };
 
 type GraphPropsType = {
-  graph: GraphData;
+  graph: GraphType;
+  countOfNodes: number;
 };
 
-const GraphComponent = ({ graph }: GraphPropsType) => {
+const GraphComponent = ({ graph, countOfNodes }: GraphPropsType) => {
+  const preparedGraph = prepareGraphDataToAlgorithm(graph);
+
+  let paths: string[][] = [];
+  let nodes: PreparedNodes = preparedGraph.nodes;
+  let edges: PreparedEdges = preparedGraph.edges;
+  let summ = 0;
+  let isPathSearchCompleted = false;
+  while (!isPathSearchCompleted) {
+    const pathSearchResult = pathSearch({
+      nodes,
+      edges,
+      currentNode: preparedGraph.nodes[1],
+      target: countOfNodes,
+      trace: [],
+    });
+
+    if (pathSearchResult === false) isPathSearchCompleted = true;
+    else {
+      const { edges: newEdges, minPathFlow } = findMinEdge({ path: pathSearchResult.trace, edges });
+      nodes = pathSearchResult.nodes;
+      edges = newEdges;
+      paths.push(pathSearchResult.trace);
+      summ += minPathFlow;
+    }
+  }
+
+  console.log('summ:', summ);
+
   return (
     <GraphContainer>
       <Graph key={nanoid()} graph={graph} options={options} />
