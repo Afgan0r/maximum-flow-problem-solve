@@ -19,7 +19,6 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
   const [checkedNodes, setCheckedNodes] = useState<CheckedNodeType[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const isLastStep = step === nodes.length - 1;
-  console.log(step, nodes.length, isLastStep);
 
   const deleteFromCheckedNodes = useCallback(
     (nodeId: number) => {

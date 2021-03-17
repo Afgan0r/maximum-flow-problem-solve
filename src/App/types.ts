@@ -30,6 +30,7 @@ export type Edge = {
   };
   capacity: number;
   flowValue: number;
+  dashes?: boolean;
 };
 
 export type StoreType = {

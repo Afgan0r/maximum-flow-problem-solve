@@ -1,6 +1,7 @@
 import {
   StoreType,
   Edge,
+  Node,
   PreparedGraph,
   PreparedNodes,
   GraphType,
@@ -14,6 +15,8 @@ import { CheckedNodeType } from './App/CreateEdges';
 import keyBy from 'lodash/keyBy';
 import dropRight from 'lodash/dropRight';
 import map from 'lodash/map';
+import values from 'lodash/values';
+import compact from 'lodash/compact';
 
 export const initializeNodes = (count: number): StoreType => {
   const result: StoreType = {
@@ -146,11 +149,11 @@ export const findMinEdge = ({ path, edges }: FindMinEdgePropsType): { edges: Pre
 
   const edgesWithIncreasedFlow = edgesByPath.map((edge) => {
     const newCapacity = edge.currentCapacity - minimalEdge.currentCapacity;
-    const flowValue = newCapacity ? edge.currentCapacity - minimalEdge.currentCapacity : 0;
+    const flowValue = edge.flowValue + minimalEdge.currentCapacity;
     return {
       ...edge,
       currentCapacity: newCapacity,
-      flowValue: flowValue,
+      flowValue,
     };
   });
   const newEdges = {
@@ -162,5 +165,59 @@ export const findMinEdge = ({ path, edges }: FindMinEdgePropsType): { edges: Pre
     edges: newEdges,
     minPath: minimalEdge.id,
     minPathFlow: minimalEdge.currentCapacity,
+  };
+};
+
+export const parsePreparedGraph = (nodes: Node[], preparedGraph: PreparedGraph): GraphType => {
+  const newNodes: Node[] = values(preparedGraph.nodes).map((preparedNode) => {
+    const currentNode = nodes.find((node) => node.id === preparedNode.id) || nodes[0];
+
+    if (currentNode.id === 1)
+      return {
+        ...currentNode,
+        color: 'red',
+        font: {
+          color: 'white',
+        },
+        fixed: {
+          x: true,
+          y: true,
+        },
+        x: -200,
+        y: 0,
+      };
+    if (currentNode.id === nodes.length)
+      return {
+        ...currentNode,
+        color: 'green',
+        font: {
+          color: 'white',
+        },
+        fixed: {
+          x: true,
+          y: true,
+        },
+        x: 200,
+        y: 0,
+      };
+    return currentNode;
+  });
+
+  const newEdges: Edge[] = values(preparedGraph.edges).map((preparedEdge) => ({
+    id: preparedEdge.id,
+    from: preparedEdge.from,
+    to: preparedEdge.to,
+    label: `(${preparedEdge.initialCapacity}) ${preparedEdge.flowValue || ''}`,
+    font: {
+      align: 'top',
+    },
+    capacity: preparedEdge.initialCapacity,
+    flowValue: preparedEdge.flowValue,
+    dashes: preparedEdge.initialCapacity === preparedEdge.flowValue,
+  }));
+
+  return {
+    nodes: newNodes,
+    edges: compact(newEdges),
   };
 };

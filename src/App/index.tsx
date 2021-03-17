@@ -199,8 +199,6 @@ const App = () => {
   // const [isSetupCompleted, setIsSetupCompleted] = useState<Boolean>(false);
   const [isSetupCompleted, setIsSetupCompleted] = useState<Boolean>(true);
 
-  console.log(store);
-
   const CreateNodesComponent = (
     <CreateNodes
       onCreate={(count) => {

@@ -3,7 +3,7 @@ import { Options } from 'vis';
 import { GraphContainer } from './styled';
 import { nanoid } from 'nanoid';
 import { GraphType, PreparedEdges, PreparedNodes } from 'App/types';
-import { findMinEdge, pathSearch, prepareGraphDataToAlgorithm } from 'utils';
+import { findMinEdge, parsePreparedGraph, pathSearch, prepareGraphDataToAlgorithm } from 'utils';
 
 const options: Options = {
   locale: 'ru',
@@ -65,11 +65,9 @@ const GraphComponent = ({ graph, countOfNodes }: GraphPropsType) => {
     }
   }
 
-  console.log('summ:', summ);
-
   return (
     <GraphContainer>
-      <Graph key={nanoid()} graph={graph} options={options} />
+      <Graph key={nanoid()} graph={parsePreparedGraph(graph.nodes, { nodes, edges })} options={options} />
     </GraphContainer>
   );
 };
