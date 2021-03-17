@@ -86,3 +86,9 @@ export type FindMinEdgePropsType = {
   path: string[];
   edges: PreparedEdges;
 };
+
+export type HistoryType = {
+  path: string[];
+  minPath: string;
+  minPathFlow: number;
+};

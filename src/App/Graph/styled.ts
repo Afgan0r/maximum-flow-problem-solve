@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const GraphContainer = styled.div`
-  flex: 1;
+  flex: 3;
 
   .vis-network:focus {
     outline: 0;
