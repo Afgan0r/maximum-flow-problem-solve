@@ -55,6 +55,13 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
     [checkedNodes, deleteFromCheckedNodes]
   );
 
+  const handleNextStepClick = () => {
+    setStep(step + 1);
+    setEdges([...edges, ...parseCheckedNodesToEdges(checkedNodes, step + 1)]);
+    setCheckedNodes([]);
+    setInputKeys(generateInputKeys(nodes.length));
+  };
+
   return (
     <Container>
       <Space direction='vertical'>
@@ -82,20 +89,13 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
                   handleInputChange(node.id, value);
                 }}
                 tabIndex={isDisabled ? -1 : 0}
+                onKeyUp={(e) => (e.key === 'Enter' ? handleNextStepClick() : null)}
               />
             </RowContainer>
           );
         })}
         {!isLastStep ? (
-          <Button
-            type='primary'
-            onClick={() => {
-              setStep(step + 1);
-              setEdges([...edges, ...parseCheckedNodesToEdges(checkedNodes, step + 1)]);
-              setCheckedNodes([]);
-              setInputKeys(generateInputKeys(nodes.length));
-            }}
-            >
+          <Button type='primary' onClick={handleNextStepClick}>
             Далее
           </Button>
         ) : (
