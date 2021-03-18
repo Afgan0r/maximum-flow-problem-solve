@@ -10,4 +10,8 @@ export const RowContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  > div {
+    margin-left: 8px;
+  }
 `;

@@ -1,9 +1,8 @@
-import { Typography, Checkbox, Button, Space, InputNumber } from 'antd';
+import { Typography, Button, Space, InputNumber } from 'antd';
 import { Node, Edge, IdType } from '../types';
 import { useCallback, useState } from 'react';
 import { Container, RowContainer } from './styled';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { parseCheckedNodesToEdges } from 'utils';
+import { generateInputKeys, parseCheckedNodesToEdges } from 'utils';
 
 type CreateEdgesPropsType = {
   nodes: Node[];
@@ -18,6 +17,7 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
   const [step, setStep] = useState<number>(0);
   const [checkedNodes, setCheckedNodes] = useState<CheckedNodeType[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [inputKeys, setInputKeys] = useState(generateInputKeys(edges.length));
   const isLastStep = step === nodes.length - 1;
 
   const deleteFromCheckedNodes = useCallback(
@@ -30,16 +30,24 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
     },
     [checkedNodes]
   );
-  const handleCheckBoxCheck = useCallback(
-    (e: CheckboxChangeEvent, nodeId: number, capacity: number) => {
-      const state = e.target.checked;
+  const handleInputChange = useCallback(
+    (nodeId: number, capacity: number) => {
+      const state = capacity > 0;
 
       if (state) {
-        const newValue = {
-          id: nodeId,
-          edgeCapacity: capacity,
-        };
-        setCheckedNodes([...checkedNodes, newValue]);
+        let newCheckedNodes = [...checkedNodes];
+        const checkedNodeIndex = checkedNodes.findIndex((checkedNode) => checkedNode.id === nodeId);
+        if (checkedNodeIndex > -1) {
+          newCheckedNodes[checkedNodeIndex].edgeCapacity = capacity;
+        } else {
+          const newValue = {
+            id: nodeId,
+            edgeCapacity: capacity,
+          };
+          newCheckedNodes = [...newCheckedNodes, newValue];
+        }
+
+        setCheckedNodes(newCheckedNodes);
       } else {
         deleteFromCheckedNodes(nodeId);
       }
@@ -53,30 +61,27 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
         <Typography.Text>
           Создание ребер для <b>вершины {step + 1}</b>:
         </Typography.Text>
-        {nodes.map((node) => {
+        {nodes.map((node, i) => {
           const index = checkedNodes.findIndex((checkedNode) => checkedNode.id === node.id);
-          const isDisabled = isLastStep || step + 1 === node.id || node.id === 1 || edges.findIndex((edge) => edge.from === node.id && edge.to === step + 1) > -1;
-          const checked = checkedNodes.findIndex((checkedNode) => checkedNode.id === node.id) >= 0;
+          const isDisabled =
+            isLastStep ||
+            step + 1 === node.id ||
+            node.id === 1 ||
+            edges.findIndex((edge) => edge.from === node.id && edge.to === step + 1) > -1;
+          const value = index < 0 || isDisabled ? 0 : checkedNodes[index].edgeCapacity;
 
           return (
-            <RowContainer>
-              <Checkbox
-                autoFocus
-                disabled={isDisabled}
-                checked={checked}
-                onChange={(e) => handleCheckBoxCheck(e, node.id, 0)}>{`Вершина ${node.label}`}</Checkbox>
+            <RowContainer key={inputKeys[i]}>
+              <Typography>Вершина {node.label}: </Typography>
               <InputNumber
-                disabled={isDisabled || !checked}
+                value={value}
+                disabled={isDisabled}
                 min={0}
                 defaultValue={0}
-                value={index < 0 ? 0 : checkedNodes[index].edgeCapacity}
                 onChange={(value) => {
-                  const newCheckedNodes = checkedNodes.map((checkedNode) => ({
-                    id: checkedNode.id,
-                    edgeCapacity: node.id === checkedNode.id ? value : checkedNode.edgeCapacity,
-                  }));
-                  setCheckedNodes(newCheckedNodes);
+                  handleInputChange(node.id, value);
                 }}
+                tabIndex={isDisabled ? -1 : 0}
               />
             </RowContainer>
           );
@@ -88,7 +93,9 @@ const CreateEdgesComponent = ({ nodes, onCreate }: CreateEdgesPropsType) => {
               setStep(step + 1);
               setEdges([...edges, ...parseCheckedNodesToEdges(checkedNodes, step + 1)]);
               setCheckedNodes([]);
-            }}>
+              setInputKeys(generateInputKeys(nodes.length));
+            }}
+            >
             Далее
           </Button>
         ) : (

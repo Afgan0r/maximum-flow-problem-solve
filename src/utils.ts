@@ -17,6 +17,7 @@ import dropRight from 'lodash/dropRight';
 import map from 'lodash/map';
 import values from 'lodash/values';
 import compact from 'lodash/compact';
+import { nanoid } from 'nanoid';
 
 export const initializeNodes = (count: number): StoreType => {
   const result: StoreType = {
@@ -220,4 +221,13 @@ export const parsePreparedGraph = (nodes: Node[], preparedGraph: PreparedGraph):
     nodes: newNodes,
     edges: compact(newEdges),
   };
+};
+
+export const generateInputKeys = (count: number): string[] => {
+  let keys = [];
+  for (let i = 0; i < count; i++) {
+    keys.push(nanoid());
+  }
+
+  return keys;
 };
